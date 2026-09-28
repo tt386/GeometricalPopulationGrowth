@@ -19,6 +19,7 @@ from common import (
     plot_residuals,
     print_comparison,
     print_fit,
+    print_latex_table,
     save_figure,
     trajectory_spec,
 )
@@ -181,6 +182,7 @@ for result in results:
     print_fit(result)
 
 print_comparison(results)
+print_latex_table(results)
 
 
 # ============================================================

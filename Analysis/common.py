@@ -253,6 +253,157 @@ def print_comparison(results, title=None):
     print("============================================================\n")
 
 
+def latex_number(value):
+
+    if not np.isfinite(value):
+        return "-"
+
+    if value == 0:
+        return "0"
+
+    sf = P.LATEX_SIG_FIGS
+    magnitude = abs(value)
+
+    if magnitude < P.LATEX_SCI_BELOW or magnitude >= P.LATEX_SCI_ABOVE:
+        mantissa, exponent = f"{value:.{sf - 1}e}".split("e")
+        return rf"${mantissa}\times10^{{{int(exponent)}}}$"
+
+    decimals = sf - 1 - int(np.floor(np.log10(magnitude)))
+    rounded = round(value, decimals)
+
+    if decimals <= 0:
+        return f"{int(rounded)}"
+
+    return f"{rounded:.{decimals}f}"
+
+
+def latex_columns(results):
+
+    columns = list(P.LATEX_COLUMNS)
+
+    # Initial-condition column when X(t0) is fitted
+    for name in results[0]["names"]:
+        if name in P.LATEX_INITIAL_CONDITION_COLUMNS:
+            columns.append(P.LATEX_INITIAL_CONDITION_COLUMNS[name])
+
+    return columns
+
+
+def latex_cells(result, columns):
+
+    # Parameter cells in column order, then AIC and BIC
+    column_of = {
+        **P.LATEX_PARAMETER_COLUMNS[result["model"]],
+        **P.LATEX_INITIAL_CONDITION_COLUMNS,
+    }
+
+    cells = dict.fromkeys(columns, "-")
+
+    for name, value in zip(result["names"], result["values"]):
+        cells[column_of[name]] = latex_number(value)
+
+    return [
+        *(cells[column] for column in columns),
+        latex_number(result["stats"]["AIC"]),
+        latex_number(result["stats"]["BIC"]),
+    ]
+
+
+def print_latex_table(results, title=None):
+
+    columns = latex_columns(results)
+
+    rows = results
+
+    if P.LATEX_SORT_BY_AIC:
+        rows = sorted(results, key=lambda r: r["stats"]["AIC"])
+
+    header = " & ".join(["Model", *columns, "AIC", "BIC"])
+    spec = "|" + " |".join(["c"] * (len(columns) + 3)) + "|"
+
+    if title is not None:
+        print(f"% {title}")
+
+    print(rf"\begin{{tabular}}{{{spec}}}")
+    print(r"         \hline")
+    print(rf"         {header} \\ [0.5ex] ")
+    print(r"         \hline\hline")
+
+    for result in rows:
+
+        entries = [
+            P.LATEX_MODEL_NAMES[result["model"]],
+            *latex_cells(result, columns),
+        ]
+
+        print("         " + " & ".join(entries) + r"\\ ")
+        print(r"         \hline")
+
+    print(r"    \end{tabular}")
+    print()
+
+
+def print_latex_wide_table(groups):
+    r"""
+    One table with the groups side by side, e.g. the human-population
+    time ranges. groups is a list of (title, results), each fitting the
+    same models. Rows follow the model order in results.
+
+    With P.LATEX_WIDE_FULL_WIDTH the tabular is wrapped in table* and
+    scaled to \textwidth, spanning both columns of a two-column paper
+    (needs \usepackage{graphicx}).
+    """
+
+    columns = latex_columns(groups[0][1])
+    per_group = len(columns) + 2
+    n_columns = 1 + len(groups) * per_group
+
+    spec = "|c||" + "||".join(
+        " |".join(["c"] * per_group) for _ in groups
+    ) + "|"
+
+    titles = " & ".join(
+        rf"\multicolumn{{{per_group}}}{{c|}}{{{title.replace('–', '--')}}}"
+        for title, _ in groups
+    )
+
+    header = " & ".join(
+        ["Model", *([*columns, "AIC", "BIC"] * len(groups))]
+    )
+
+    indent = "         "
+
+    if P.LATEX_WIDE_FULL_WIDTH:
+        print(r"\begin{table*}")
+        print(r"    \centering")
+        print(r"    \resizebox{\textwidth}{!}{%")
+
+    print(rf"\begin{{tabular}}{{{spec}}}")
+    print(indent + r"\hline")
+    print(indent + f" & {titles} \\\\")
+    print(indent + rf"\cline{{2-{n_columns}}}")
+    print(indent + rf"{header} \\ [0.5ex] ")
+    print(indent + r"\hline\hline")
+
+    for i, result in enumerate(groups[0][1]):
+
+        entries = [P.LATEX_MODEL_NAMES[result["model"]]]
+
+        for _, results in groups:
+            entries += latex_cells(results[i], columns)
+
+        print(indent + " & ".join(entries) + r"\\ ")
+        print(indent + r"\hline")
+
+    print(r"    \end{tabular}")
+
+    if P.LATEX_WIDE_FULL_WIDTH:
+        print(r"    }")
+        print(r"\end{table*}")
+
+    print()
+
+
 # ============================================================
 # PLOTTING
 # ============================================================

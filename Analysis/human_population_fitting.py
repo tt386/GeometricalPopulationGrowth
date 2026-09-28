@@ -22,6 +22,7 @@ from common import (
     plot_residuals,
     print_comparison,
     print_fit,
+    print_latex_wide_table,
     save_figure,
     trajectory_spec,
 )
@@ -184,6 +185,8 @@ for regime in regimes:
         print_fit(result, title=regime["title"])
 
     print_comparison(regime["results"], title=regime["title"])
+
+print_latex_wide_table([(r["title"], r["results"]) for r in regimes])
 
 
 # ============================================================

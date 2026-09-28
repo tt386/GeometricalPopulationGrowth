@@ -112,6 +112,51 @@ PATENT_MODELS = ["power_law", "generalised_TZ", "non_per_capita_generalised_TZ"]
 
 
 # ============================================================
+# LATEX TABLE OUTPUT
+# ============================================================
+
+# Each script prints a LaTeX tabular of fitted parameters, AIC and BIC.
+
+# Model names in the table
+LATEX_MODEL_NAMES = {
+    "exponential": "Exponential",
+    "power_law": "Power-Law",
+    "generalised_TZ": "Generalised T-Z",
+    "non_per_capita_generalised_TZ": "Non-per-capita generalised T-Z",
+}
+
+# Parameter columns, and the column each model parameter is placed in.
+# The power-law exponent b shares the gamma column with the T-Z exponent c.
+LATEX_COLUMNS = [r"$\alpha$", r"$\beta$", r"$\gamma$"]
+LATEX_PARAMETER_COLUMNS = {
+    "exponential": {"a": r"$\alpha$"},
+    "power_law": {"a": r"$\alpha$", "b": r"$\gamma$"},
+    "generalised_TZ": {"a": r"$\alpha$", "b": r"$\beta$", "c": r"$\gamma$"},
+    "non_per_capita_generalised_TZ": {
+        "a": r"$\alpha$", "b": r"$\beta$", "c": r"$\gamma$"
+    },
+}
+
+# Extra column added when FIX_INITIAL_CONDITION is False
+LATEX_INITIAL_CONDITION_COLUMNS = {"X0": r"$X_0$", "N0": r"$N_0$"}
+
+LATEX_SIG_FIGS = 2
+
+# Numbers with magnitude below / at or above these are written as
+# $m\times10^{e}$
+LATEX_SCI_BELOW = 1e-2
+LATEX_SCI_ABOVE = 1e4
+
+# True: rows ordered by AIC (best first). False: order of the model list.
+# The human-population table puts the time ranges side by side, so its
+# rows always follow HUMAN_MODELS.
+LATEX_SORT_BY_AIC = True
+
+# Wrap the human-population table in table* scaled to \textwidth so it
+# spans both columns (needs \usepackage{graphicx})
+LATEX_WIDE_FULL_WIDTH = True
+
+# ============================================================
 # SPECIATION SETTINGS
 # ============================================================
 
