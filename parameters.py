@@ -79,14 +79,14 @@ MODEL_STYLES = {
         "zorder": 3,
     },
     "generalised_TZ": {
-        "label": "generalised T-Z",
+        "label": "replicative geometric",
         "color": "cyan",
         "linestyle": "solid",
         "linewidth": 2,
         "zorder": 2,
     },
     "non_per_capita_generalised_TZ": {
-        "label": "non-per-capita generalised T-Z",
+        "label": "direct geometric",
         "color": "purple",
         "linestyle": "dotted",
         "linewidth": 2,
