@@ -207,7 +207,7 @@ ax_fit, ax_res = axes[:, 0]
 ylabel = r"$dx/dt$ (submissions month$^{-1}$)"
 
 if P.ARXIV_DATA_MODE != "monthly":
-    ylabel = r"$dx/dt$ (submissions year$^{-1}$)"
+    ylabel = r"$dx/dt$ (submissions yr$^{-1}$)"
 
 
 plot_fits(
