@@ -204,12 +204,18 @@ apply_style()
 fig, axes = make_figure()
 ax_fit, ax_res = axes[:, 0]
 
+ylabel = r"$dx/dt$ (submissions month$^{-1}$)"
+
+if P.ARXIV_DATA_MODE != "monthly":
+    ylabel = r"$dx/dt$ (submissions year$^{-1}$)"
+
+
 plot_fits(
     ax_fit,
     t,
     dxdt,
     [(r["model"], t, np.exp(r["prediction"])) for r in results],
-    ylabel=r"$dx/dt$ (submissions month$^{-1}$)",
+    ylabel=ylabel,
     fit_window=fit_window,
     legend_loc=P.ARXIV_LEGEND_LOC
 )
